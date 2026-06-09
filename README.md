@@ -241,8 +241,20 @@ See [`dataset/README.md`](dataset/README.md) for the one-file download (`imp.06`
 
 ---
 
+## 📜 License & ownership
+
+**© 2026 Ali Husain Rizvi ([@alirizzzv](https://github.com/alirizzzv)) — All Rights Reserved.**
+
+This repository is shared publicly for **demonstration, evaluation, and portfolio purposes only**.
+It is **not** licensed for reuse, copying, modification, or redistribution. Please don't repackage or
+submit this work as your own. See [`LICENSE`](LICENSE) for the full terms.
+
+---
+
 <div align="center">
 
 **[▶ Open the live demo](https://adpulse-p8oo.onrender.com)** &nbsp;·&nbsp; built by [**@alirizzzv**](https://github.com/alirizzzv)
+
+© 2026 Ali Husain Rizvi · All Rights Reserved · not for redistribution
 
 </div>
