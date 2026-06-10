@@ -14,6 +14,7 @@
   .page { padding: 0 26px 56px; max-width: 1480px; margin: 0 auto; }
 
   .topbar { position: sticky; top: 0; z-index: 50; display:flex; align-items:center; gap: 16px;
+    flex-wrap: wrap; row-gap: 10px;
     padding: 13px 18px; margin: 14px 0 22px; border-radius: var(--r);
     background: rgba(8,11,20,0.78); backdrop-filter: blur(16px) saturate(140%);
     border: 1px solid var(--stroke); box-shadow: var(--shadow); }
@@ -233,23 +234,34 @@ const fmt = n => Math.round(n).toLocaleString();
 const pct = n => (n*100).toFixed(3) + '%';
 const shortId = s => (s||'').slice(0,8) + '…';
 const hhmmss = ts => (!ts||ts.length<14) ? new Date().toLocaleTimeString() : ts.slice(8,10)+':'+ts.slice(10,12)+':'+ts.slice(12,14);
+const nowClock = () => { const d=new Date(); return [d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':'); };
 const colorForLoad = p => p>=95 ? '#f76d83' : p>=80 ? '#f5b53d' : '#2f6bff';
 
 const lastVals = {};
 function setValue(el, to, suffix=''){
   const id = el.id, from = lastVals[id] ?? 0;
   if(from === to) return; lastVals[id] = to;
+  if(document.hidden){ el.textContent = fmt(to)+suffix; return; }  // bg tab: set directly (rAF is paused)
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
   const dur = 450, t0 = performance.now();
   const step = now => { const k = Math.min((now-t0)/dur,1), e = 1-Math.pow(1-k,3);
     el.textContent = fmt(from + (to-from)*e) + suffix; if(k<1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
-function pushPoint(chart, label, values){
+function pushData(chart, label, values){
   chart.data.labels.push(label); values.forEach((v,i)=> chart.data.datasets[i].data.push(v));
   if(chart.data.labels.length > MAX_POINTS){ chart.data.labels.shift(); chart.data.datasets.forEach(d=>d.data.shift()); }
-  chart.update('none');
 }
+// Batch live rendering on a fixed interval to stay smooth under load. Uses
+// setInterval (not requestAnimationFrame) so updates keep flowing even when the
+// tab is backgrounded — rAF is paused in background tabs and would freeze the feed.
+let _dirty = false, _stats = null; const _rows = [];
+function flush(){
+  if(_rows.length){ _rows.forEach(addFeedRow); _rows.length = 0; $('feedCount').textContent = fmt(state.processed); }
+  if(_dirty){ bidChart.update('none'); probChart.update('none'); _dirty = false; }
+  if(_stats){ renderStats(_stats); _stats = null; }
+}
+setInterval(flush, 200);
 
 function addFeedRow(d){
   const body = $('feedBody'); const tr = document.createElement('tr');
@@ -261,7 +273,7 @@ function addFeedRow(d){
   if(state.highlight!=='all' && String(d.advertiser_id)===state.highlight) tr.classList.add('hl-row');
   if(state.highlight!=='all' && String(d.advertiser_id)!==state.highlight) tr.classList.add('dim-row');
   tr.innerHTML = `
-    <td class="mono dim">${hhmmss(d.timestamp)}</td>
+    <td class="mono dim">${nowClock()}</td>
     <td class="mono">${shortId(d.bid_id)}</td>
     <td class="mono">${d.advertiser_id} <span class="dim">N=${d.n_value}</span></td>
     <td class="mono" style="color:var(--blue-2)">${pct(d.ctr)}</td>
@@ -301,12 +313,13 @@ socket.on('connect',    ()=>{ $('liveDot').classList.remove('off'); $('liveText'
 socket.on('disconnect', ()=>{ $('liveDot').classList.add('off');    $('liveText').textContent='OFFLINE'; });
 socket.on('bid_result', d=>{
   if(state.paused) return;
-  $('feedCount').textContent = fmt(++state.processed);
-  addFeedRow(d);
-  pushPoint(bidChart, hhmmss(d.timestamp), [ d.bid_price===-1?null:d.bid_price, d.floor_price ]);
-  pushPoint(probChart, '', [ d.ctr, d.cvr ]);
+  state.processed++;
+  _rows.push(d); if(_rows.length > MAX_ROWS) _rows.shift();
+  pushData(bidChart, nowClock(), [ d.bid_price===-1?null:d.bid_price, d.floor_price ]);
+  pushData(probChart, '', [ d.ctr, d.cvr ]);
+  _dirty = true;
 });
-socket.on('stats_update', d=>{ if(!state.paused) renderStats(d); });
+socket.on('stats_update', d=>{ if(state.paused) return; _stats = d; });
 
 $('pauseBtn').addEventListener('click', ()=>{
   state.paused = !state.paused;
