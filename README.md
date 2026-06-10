@@ -10,11 +10,11 @@ interactive **3D RTB globe**. Every number is computed by real models — nothin
 
 <br/>
 
-[![Live Demo](https://img.shields.io/badge/▶_Live_Demo-Open-2fd39a?style=for-the-badge)](https://adpulse-p8oo.onrender.com)
+[![Live Demo](https://img.shields.io/badge/▶_Live_Demo-Open-2fd39a?style=for-the-badge)](https://adpulse-5r4y.onrender.com)
 &nbsp;
-[![Dashboard](https://img.shields.io/badge/Live_Dashboard-2f6bff?style=for-the-badge)](https://adpulse-p8oo.onrender.com/dashboard)
+[![Dashboard](https://img.shields.io/badge/Live_Dashboard-2f6bff?style=for-the-badge)](https://adpulse-5r4y.onrender.com/dashboard)
 &nbsp;
-[![Bid Tester](https://img.shields.io/badge/Bid_Tester-38bdf8?style=for-the-badge)](https://adpulse-p8oo.onrender.com/bidtester)
+[![Bid Tester](https://img.shields.io/badge/Bid_Tester-38bdf8?style=for-the-badge)](https://adpulse-5r4y.onrender.com/bidtester)
 
 <br/>
 
@@ -253,7 +253,7 @@ submit this work as your own. See [`LICENSE`](LICENSE) for the full terms.
 
 <div align="center">
 
-**[▶ Open the live demo](https://adpulse-p8oo.onrender.com)** &nbsp;·&nbsp; built by [**@alirizzzv**](https://github.com/alirizzzv)
+**[▶ Open the live demo](https://adpulse-5r4y.onrender.com)** &nbsp;·&nbsp; built by [**@alirizzzv**](https://github.com/alirizzzv)
 
 © 2026 Ali Husain Rizvi · All Rights Reserved · not for redistribution
 
