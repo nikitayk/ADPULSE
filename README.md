@@ -31,6 +31,18 @@ interactive **3D RTB globe**. Every number is computed by real models — nothin
 
 ---
 
+## 📸 Screenshots
+
+**Landing — interactive 3D RTB globe** (live bid flow streamed over WebSocket)
+
+![ADPULSE landing page with live 3D RTB globe](docs/landing.png)
+
+**Live operator dashboard** — real-time KPIs, bid-price & CTR/CVR charts, and a streaming auction feed
+
+![ADPULSE live dashboard](docs/dashboard.png)
+
+---
+
 ## 🎯 What is this?
 
 Every time a webpage loads, a **millisecond auction** happens behind the scenes for the ad slot.
