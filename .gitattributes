@@ -1,0 +1,15 @@
+# Normalise line endings across platforms.
+* text=auto
+
+# Keep shell scripts LF.
+*.sh text eol=lf
+
+# Treat large data / lookup files as data so they don't skew the language stats.
+city.txt        linguist-data
+region.txt      linguist-data
+user.profile.tags.txt linguist-data
+output.txt      linguist-generated
+dataset/**      linguist-data
+
+# Pickled model artifacts are binary.
+*.pkl binary
