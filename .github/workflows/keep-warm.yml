@@ -1,0 +1,36 @@
+name: Keep deploy warm
+
+# Render's free tier spins the service down after ~15 min of inactivity, which
+# causes a 30-60s cold start (models reload) on the next visit. This job pings
+# the health endpoint every 10 minutes to keep the instance awake for visitors.
+#
+# Notes / honest caveats:
+#   - GitHub cron can run a few minutes late under load; 10-min interval leaves
+#     buffer against Render's 15-min idle window.
+#   - Scheduled workflows auto-disable after 60 days of no repo activity (GitHub
+#     policy) — fine for an active project; re-enable from the Actions tab if so.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # every 10 minutes
+  workflow_dispatch:          # allow manual "ping now" from the Actions tab
+
+# Don't pile up overlapping pings if a run is slow.
+concurrency:
+  group: keep-warm
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /api/health (with retries)
+        run: |
+          URL="https://adpulse-457r.onrender.com/api/health"
+          for i in 1 2 3 4 5; do
+            code=$(curl -fsS -L --max-time 90 -o /dev/null -w "%{http_code}" "$URL") && {
+              echo "Ping $i: HTTP $code — awake."; exit 0;
+            }
+            echo "Ping $i failed (likely cold start), retrying in 20s..."; sleep 20
+          done
+          echo "All pings failed — service may be down."; exit 1

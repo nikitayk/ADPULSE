@@ -345,6 +345,7 @@ hyperparameters, and reproducibility notes.
 - **Real second-price auctions** — wins are resolved against the historical `Payingprice`, not a guess.
 - **Graceful degradation** — no dataset? It transparently falls back to a synthetic generator, so the live demo works on a fresh cloud box with zero setup.
 - **Single-process realtime** — one background producer thread feeds the in-memory stats and the Socket.IO broadcast, keeping the model and dashboard perfectly in sync.
+- **Cold-start mitigation** — the free hosting tier sleeps after ~15 min idle (a 30–60s cold start while the models reload). A GitHub Actions cron (`.github/workflows/keep-warm.yml`) pings `/api/health` every 10 minutes to keep the demo responsive for visitors.
 
 ---
 
