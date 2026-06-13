@@ -1,0 +1,10 @@
+# ADPULSE training pipeline dependencies.
+#
+# Versions are pinned to match bidder.submission.code/python/requirements.txt
+# EXACTLY — the models are pickled here and unpickled in production, so the
+# scikit-learn / LightGBM versions must line up to avoid ABI / format drift.
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.2.2
+lightgbm==4.3.0
+joblib==1.4.2

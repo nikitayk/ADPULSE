@@ -5,7 +5,6 @@ import csv
 import random
 import warnings
 
-import numpy as np
 import pandas as pd
 import joblib  # For saving and loading models efficiently
 
@@ -245,11 +244,9 @@ class Bid(Bidder):
         # Timestamp Handling (Debugging + Fix)
         timestamp_str = bid_data[1]
         try:
-            timestamp_dt = pd.to_datetime(timestamp_str, format="%Y%m%d%H%M%S%f")
-            weekday = timestamp_dt.weekday()
+            pd.to_datetime(timestamp_str, format="%Y%m%d%H%M%S%f")  # validate format
         except ValueError:
             print(f"Invalid timestamp: {timestamp_str}")
-            weekday = None  # Default value or can set it to -1
 
         bid_request.setTimestamp(timestamp_str)
         bid_request.setVisitorId(bid_data[2] if bid_data[2] != 'null' else None)

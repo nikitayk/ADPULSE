@@ -18,6 +18,7 @@ interactive **3D RTB globe**. Every number is computed by real models — nothin
 
 <br/>
 
+[![CI](https://github.com/alirizzzv/ADPULSE/actions/workflows/ci.yml/badge.svg)](https://github.com/alirizzzv/ADPULSE/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.9-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3.0-000000?logo=flask&logoColor=white)
 ![Socket.IO](https://img.shields.io/badge/Socket.IO-live_feed-010101?logo=socketdotio&logoColor=white)
@@ -291,6 +292,48 @@ The app auto-detects IPinYou logs placed in `dataset/` and switches from synthet
 | `/api/reset` | POST | Reset the live simulation |
 | `/` · `/dashboard` · `/bidtester` | GET | The three frontends |
 | Socket.IO `bid_result` / `stats_update` | WS | Live auction event stream |
+
+---
+
+## 🧪 Tests & CI
+
+The bidding logic, feature extraction, and the log-streaming layer are covered
+by a `pytest` suite, run automatically on every push via GitHub Actions
+(Python 3.9 + 3.11, with a `ruff` lint gate).
+
+```bash
+python3 -m venv .venv && ./.venv/bin/pip install -r bidder.submission.code/python/requirements.txt
+./.venv/bin/pip install pytest ruff
+./.venv/bin/pytest -v          # run the suite
+./.venv/bin/ruff check .       # lint
+```
+
+What's covered:
+
+- **Bidding decision** (`tests/test_bidding.py`) — the `base · CTR · (1 + N·CVR)`
+  formula, advertiser-specific `N`, floor-price enforcement, the 300 price cap,
+  the budget hard-stop, and the dynamic bid-ratio throttle. The formula tests
+  inject stand-in models so they're deterministic and dependency-light; a
+  separate integration test exercises the real `.pkl` artifacts end-to-end.
+- **Feature extraction** (`tests/test_feature_extraction.py`) — the UA → device /
+  OS / browser parsers and the IP → network-class mapping.
+- **Data layer** (`tests/test_data_source.py`) — null normalisation, the 20- vs
+  24-column auto-detection, BidID-based outcome joins, and the synthetic-fallback
+  trigger.
+
+## 🔬 Reproducing the models
+
+The trained `.pkl` artifacts can be regenerated from the raw IPinYou logs — the
+training pipeline lives in [`training/`](training/) and its feature engineering
+is kept in lock-step with the inference path in `Bid.py`:
+
+```bash
+pip install -r training/requirements.txt
+python training/train.py --dataset-dir ./dataset --days 06,07,08
+```
+
+See [`training/README.md`](training/README.md) for the full feature contract,
+hyperparameters, and reproducibility notes.
 
 ---
 

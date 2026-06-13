@@ -8,6 +8,13 @@ bidder.submission.code/python/__pycache__/
 bidder.submission.code/python/venv/
 **/__pycache__/
 *.pyc
+.venv/
+.venv-test/
+.pytest_cache/
+.ruff_cache/
+
+# training pipeline output
+training/metrics.json
 
 # OS / editor
 .DS_Store
